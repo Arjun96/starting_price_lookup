@@ -28,6 +28,18 @@ def get_preferrred_brands():
     
     return user_brand_preferences
 
+def get_price_limit():
+
+    price_limit = input()
+
+    if(not price_limit.isdigit()):
+        print("You have not entered a valid price limit. \n")
+        while (not price_limit.isdigit()):
+            price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+
+    return price_limit
+
+
 #Setting Chrome to run Headless
 chrome_options = Options()
 chrome_options.headless = True
@@ -45,11 +57,11 @@ print("Your preferred brands are: ")
 for item in user_brand_preferences:
     print(item)
 
-price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+print("Please enter your preferred full price limit now. If you have no preference, please enter 0. ")
+full_price_limit = get_price_limit()
 
-if(not price_limit.isdigit()):
-    print("You have not entered a valid price limit. \n")
-    while (not price_limit.isdigit()):
-        price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+print("Please enter your preferred 24-month monthly price limit now. If you have no preference, please enter 0. ")
+monthly_price_limit = get_price_limit()
 
-print("Your price limit is: " + price_limit)
+print("Your full price limit is " + full_price_limit + " and your 24-month monthly price limit is " + monthly_price_limit)
+
