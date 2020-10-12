@@ -22,7 +22,7 @@ def get_preferrred_brands():
         user_brand_preferences.append(response)
 
     while (response != 0):
-        response = get_valid_brand(input("You can enter another brand here now or enter a blank space to move onto the next question.\n"))
+        response = get_valid_brand(input("You can enter another brand here now or press enter without typing anything to move onto the next question.\n"))
         if response != 0:
             user_brand_preferences.append(response)
     
@@ -38,6 +38,20 @@ def get_price_limit():
             price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
 
     return price_limit
+
+def get_preferred_colors():
+    user_color_preferences = []
+
+    response = input("If you have any color preferences please enter them one at a time here. If you have no preference, please press enter without typing anything to move on")
+    if (len(response) != 0):
+        user_color_preferences.append(response)
+    
+    while(len(response) != 0):
+        response = input("You can enter another color here now or press enter without typing anything to move onto the next question.\n")
+        if len(response) != 0:
+            user_color_preferences.append(response)
+    
+    return user_color_preferences
 
 
 #Setting Chrome to run Headless
@@ -65,3 +79,8 @@ monthly_price_limit = get_price_limit()
 
 print("Your full price limit is " + full_price_limit + " and your 24-month monthly price limit is " + monthly_price_limit)
 
+user_color_preferences = get_preferred_colors()
+
+print("Your preferred colors are: ")
+for item in user_color_preferences:
+    print(item)
