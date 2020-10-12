@@ -44,3 +44,12 @@ user_brand_preferences = get_preferrred_brands()
 print("Your preferred brands are: ")
 for item in user_brand_preferences:
     print(item)
+
+price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+
+if(not price_limit.isdigit()):
+    print("You have not entered a valid price limit. \n")
+    while (not price_limit.isdigit()):
+        price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+
+print("Your price limit is: " + price_limit)
