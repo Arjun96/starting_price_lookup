@@ -88,10 +88,12 @@ def get_phone_info(phone):
 
 #Setting Chrome to run Headless
 chrome_options = Options()
+chrome_options.add_argument("start-maximized")
+
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
-driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver')
+driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
 print("Welcome to Bell's starting price lookup program for mobile phones."
@@ -106,7 +108,8 @@ user_brand_preferences = get_preferrred_brands()
 if(len(user_brand_preferences) > 0):
     for brand in user_brand_preferences:
         print("Current brand is ", brand)
-        phone = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div/div/div/div[1]/div""")
+        driver.find_element_by_id("filter_nav_" + brand.lower()).click()
+        phone = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div/div[1]/div""")
         phone_info = get_phone_info(phone)
 
 else:
