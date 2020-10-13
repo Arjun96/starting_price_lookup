@@ -1,16 +1,17 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+brands = ['samsung', 'apple', 'lg', 'google', 'huawei', 'tcl', 'motorola']
+
 def get_valid_brand(response):
-    brands = ['samsung', 'apple', 'lg', 'google', 'huawei', 'tcl', 'motorola', 'other']
     if (len(response) == 0):
         return 0
 
     if (response.lower() not in brands):
         while (response.lower() not in brands):
             print(response + " is not one of the available brands.\n")
-            response = input("Please enter a brand from the following list:" +
-            "Samsung, Apple, LG, Google, Huawei, TCL, Motorola and Other\n")
+            response = input("Please enter a brand from the following list: " +
+            "Samsung, Apple, LG, Google, Huawei, TCL and Motorola\n")
 
     return response
 
@@ -75,13 +76,22 @@ def get_price_ranges():
 
     return full_price, monthly_price
 
+def get_phone_info(phone):
+    name = phone.find_element_by_class_name("dl-tile-name").text
+    full_price = phone.find_element_by_class_name("dl-tile-full-price").find_element_by_class_name("qc").text
+    monthly_price = phone.find_element_by_class_name("dl-tile-price-wrap").find_element_by_class_name("dl-tile-price-month").find_element_by_class_name("dl-tile-price").text
+    colors_select = phone.find_element_by_class_name("dl-tile-colors").find_element_by_class_name("smartpay-color-selector").find_elements_by_tag_name("li")
+    colors = []
+    for color in colors_select:
+        colors.append(color.get_attribute("title"))
+    return [name, full_price, monthly_price, colors]
 
 #Setting Chrome to run Headless
 chrome_options = Options()
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
-driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver', options = chrome_options)
+driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver')
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
 print("Welcome to Bell's starting price lookup program for mobile phones."
@@ -89,6 +99,16 @@ print("Welcome to Bell's starting price lookup program for mobile phones."
 
 user_brand_preferences = get_preferrred_brands()
 
-full_price, monthly_price = get_price_ranges()
+#full_price, monthly_price = get_price_ranges()
 
-user_color_preferences = get_preferred_colors()
+#user_color_preferences = get_preferred_colors()
+
+if(len(user_brand_preferences) > 0):
+    for brand in user_brand_preferences:
+        print("Current brand is ", brand)
+        phone = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div/div/div/div[1]/div""")
+        phone_info = get_phone_info(phone)
+
+else:
+    for brand in brands:
+        print("All brands")
