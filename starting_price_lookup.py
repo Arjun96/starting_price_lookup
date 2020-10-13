@@ -17,7 +17,7 @@ def get_valid_brand(response):
 def get_preferrred_brands():
     user_brand_preferences = []
     
-    response = get_valid_brand(input("If you have a brand preference, please enter them now one at a time and once you are done enter a blank space to move onto the next question.\n"))
+    response = get_valid_brand(input("If you have a brand preference, please enter them now one at a time and once you are done enter a blank space to move onto the next question. \n\n"))
     if response != 0:
         user_brand_preferences.append(response)
 
@@ -32,17 +32,20 @@ def get_price_limit():
 
     price_limit = input()
 
+    if(len(price_limit) == 0):
+        return -1
+
     if(not price_limit.isdigit()):
         print("You have not entered a valid price limit. \n")
         while (not price_limit.isdigit()):
-            price_limit = input("Please enter your preferred price limit now. If you have no preference, please enter 0. ")
+            price_limit = input("Please enter your preferred price limit now. If you have no preference, please press enter without typing anything to move onto the next question.")
 
     return price_limit
 
 def get_preferred_colors():
     user_color_preferences = []
 
-    response = input("If you have any color preferences please enter them one at a time here. If you have no preference, please press enter without typing anything to move on")
+    response = input("If you have a color preferences please enter them here one at a time. If you have no preference, please press enter without typing anything to move onto the next question")
     if (len(response) != 0):
         user_color_preferences.append(response)
     
@@ -53,10 +56,29 @@ def get_preferred_colors():
     
     return user_color_preferences
 
+def get_price_ranges():
+    print("\nPlease enter your preferred minimum full price for a device now. If you have no preference, please press enter without typing anything to move onto the next question.")
+    min_full_price = get_price_limit()
+
+    print("Please enter your preferred maximum full price for a device now. If you have no preference, please press enter without typing anything to move onto the next question.")
+    max_full_price = get_price_limit()
+
+    full_price = [min_full_price,max_full_price]
+
+    print("Please enter your preferred minimum 24-month monthly price for a device now. If you have no preference, please press enter without typing anything to move onto the next question.")
+    min_monthly_price = get_price_limit()
+
+    print("Please enter your preferred maximum 24-month monthly price for a device now. If you have no preference, please press enter without typing anything to move onto the next question.")
+    max_monthly_price = get_price_limit()
+
+    monthly_price = [min_monthly_price,max_monthly_price]
+
+    return full_price, monthly_price
+
 
 #Setting Chrome to run Headless
 chrome_options = Options()
-chrome_options.headless = True
+#chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
 driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver', options = chrome_options)
@@ -67,20 +89,6 @@ print("Welcome to Bell's starting price lookup program for mobile phones."
 
 user_brand_preferences = get_preferrred_brands()
 
-print("Your preferred brands are: ")
-for item in user_brand_preferences:
-    print(item)
-
-print("Please enter your preferred full price limit now. If you have no preference, please enter 0. ")
-full_price_limit = get_price_limit()
-
-print("Please enter your preferred 24-month monthly price limit now. If you have no preference, please enter 0. ")
-monthly_price_limit = get_price_limit()
-
-print("Your full price limit is " + full_price_limit + " and your 24-month monthly price limit is " + monthly_price_limit)
+full_price, monthly_price = get_price_ranges()
 
 user_color_preferences = get_preferred_colors()
-
-print("Your preferred colors are: ")
-for item in user_color_preferences:
-    print(item)
