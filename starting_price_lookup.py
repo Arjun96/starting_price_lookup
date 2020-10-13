@@ -87,13 +87,13 @@ def get_phone_info(phone):
     return [name, full_price, monthly_price, colors]
 
 #Setting Chrome to run Headless
-chrome_options = Options()
-chrome_options.add_argument("start-maximized")
+#chrome_options = Options()
+#chrome_options.add_argument("start-maximized")
 
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
-driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
+driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver')#,options = chrome_options)
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
 print("Welcome to Bell's starting price lookup program for mobile phones."
@@ -105,13 +105,16 @@ user_brand_preferences = get_preferrred_brands()
 
 #user_color_preferences = get_preferred_colors()
 
-if(len(user_brand_preferences) > 0):
-    for brand in user_brand_preferences:
-        print("Current brand is ", brand)
-        driver.find_element_by_id("filter_nav_" + brand.lower()).click()
-        phone = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div/div[1]/div""")
-        phone_info = get_phone_info(phone)
+user_phones = []
 
-else:
-    for brand in brands:
-        print("All brands")
+if(len(user_brand_preferences) == 0):
+    user_brand_preferences = brands
+
+for brand in user_brand_preferences:
+    print("Current brand is ", brand)
+    driver.find_element_by_id("filter_nav_" + brand.lower()).click()
+    phones = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div""").find_elements_by_class_name("dl-tile")[:-1]
+    
+    for phone in phones:
+        phone_info = get_phone_info(phone)
+        user_phones.append(phone_info)
