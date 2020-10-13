@@ -103,15 +103,8 @@ def check_color_preference(phone_colors, user_color_preferences):
 
     return valid
 
-def check_full_price_preference(phone_full_price, user_full_price_preference):
-    
-    #Converting the string full price to a float
-    if(',' in phone_full_price):
-        comma = phone_full_price.index(',')
-        price = float(phone_full_price[1:comma] + phone_full_price[comma+1:])
-    else:
-        price = float(phone_full_price[1:])
-    
+def check_price(price, user_full_price_preference):
+
     #Converting user input price preference to integers
     min = int(user_full_price_preference[0])
     max = int(user_full_price_preference[1])
@@ -122,15 +115,33 @@ def check_full_price_preference(phone_full_price, user_full_price_preference):
 
     #Upper bound with no lower bound
     elif(min == -1 and max >= 0):
-        return (price < max)
+        return (price <= max)
     
     #Lower bound with no upper bound
     elif(min >= 0 and max == -1):
-        return (price > min)
+        return (price >= min)
     
     #Upper and lower bound
     else:
-        return (price > min and price < max)
+        return (price >= min and price <= max)
+
+
+def check_full_price_preference(phone_full_price, user_full_price_preference):
+    
+    #Converting the string full price to a float
+    if(',' in phone_full_price):
+        comma = phone_full_price.index(',')
+        price = float(phone_full_price[1:comma] + phone_full_price[comma+1:])
+    else:
+        price = float(phone_full_price[1:])
+
+    return check_price(price, user_full_price_preference)
+    
+
+def check_monthly_price_preference(phone_monthly_price, user_monthly_price_preference):
+
+    price = float(phone_monthly_price[1:-4])
+    return check_price(price, user_monthly_price_preference)
 
 
 #Setting Chrome to run Headless
@@ -170,9 +181,15 @@ for brand in user_brand_preferences:
         phone_info = get_phone_info(phone)
 
         #Filtering phones based on user inputted preferences
-        valid_color = check_color_preference(phone_info[3], user_color_preferences)
         valid_full_price = check_full_price_preference(phone_info[1], user_full_price_preference)
+        valid_monthly_price = check_monthly_price_preference(phone_info[2], user_monthly_price_preference)
+        valid_color = check_color_preference(phone_info[3], user_color_preferences)
 
         #If all the criteria are met, add the phone to the list shown to the user
-        if(valid_color and valid_full_price):
+        if(valid_color and valid_full_price and valid_monthly_price):
             user_phones.append(phone_info)
+
+for phone in user_phones:
+    print(phone[0])
+    print(phone[1])
+    print(phone[2])
