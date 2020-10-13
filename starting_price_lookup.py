@@ -9,6 +9,8 @@ def get_valid_brand(response):
 
     if (response.lower() not in brands):
         while (response.lower() not in brands):
+            if (len(response) == 0):
+                return 0
             print(response + " is not one of the available brands.\n")
             response = input("Please enter a brand from the following list: " +
             "Samsung, Apple, LG, Google, Huawei, TCL and Motorola\n")
@@ -48,12 +50,12 @@ def get_preferred_colors():
 
     response = input("If you have a color preferences please enter them here one at a time. If you have no preference, please press enter without typing anything to move onto the next question")
     if (len(response) != 0):
-        user_color_preferences.append(response)
+        user_color_preferences.append(response.lower())
     
     while(len(response) != 0):
         response = input("You can enter another color here now or press enter without typing anything to move onto the next question.\n")
         if len(response) != 0:
-            user_color_preferences.append(response)
+            user_color_preferences.append(response.lower())
     
     return user_color_preferences
 
@@ -86,14 +88,30 @@ def get_phone_info(phone):
         colors.append(color.get_attribute("title"))
     return [name, full_price, monthly_price, colors]
 
+def check_color_preference(phone_colors, user_color_preferences):
+    valid = False
+
+    #If the user has no color preference, the phone is valid to show
+    if(len(user_color_preferences) == 0):
+        return True
+
+    #If the phone has a color that the user prefers, then the phone is valid to show
+    for color in phone_colors:
+        print(color)
+        if color.lower() in user_color_preferences:
+            valid = True
+
+    return valid
+
+
 #Setting Chrome to run Headless
-#chrome_options = Options()
-#chrome_options.add_argument("start-maximized")
+chrome_options = Options()
+chrome_options.add_argument("start-maximized")
 
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
-driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver')#,options = chrome_options)
+driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
 print("Welcome to Bell's starting price lookup program for mobile phones."
@@ -103,7 +121,7 @@ user_brand_preferences = get_preferrred_brands()
 
 #full_price, monthly_price = get_price_ranges()
 
-#user_color_preferences = get_preferred_colors()
+user_color_preferences = get_preferred_colors()
 
 user_phones = []
 
@@ -113,8 +131,9 @@ if(len(user_brand_preferences) == 0):
 for brand in user_brand_preferences:
     print("Current brand is ", brand)
     driver.find_element_by_id("filter_nav_" + brand.lower()).click()
-    phones = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div""").find_elements_by_class_name("dl-tile")[:-1]
-    
+    phones = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div""").find_elements_by_class_name("dl-tile")
+    print(len(phones))
     for phone in phones:
         phone_info = get_phone_info(phone)
-        user_phones.append(phone_info)
+        if(check_color_preference(phone_info[3], user_color_preferences)):
+            user_phones.append(phone_info)
