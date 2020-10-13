@@ -103,11 +103,39 @@ def check_color_preference(phone_colors, user_color_preferences):
 
     return valid
 
+def check_full_price_preference(phone_full_price, user_full_price_preference):
+    
+    #Converting the string full price to a float
+    if(',' in phone_full_price):
+        comma = phone_full_price.index(',')
+        price = float(phone_full_price[1:comma] + phone_full_price[comma+1:])
+    else:
+        price = float(phone_full_price[1:])
+    
+    #Converting user input price preference to integers
+    min = int(user_full_price_preference[0])
+    max = int(user_full_price_preference[1])
+
+    #No lower and no upper bound
+    if(min == -1 and max == -1):
+        return True
+
+    #Upper bound with no lower bound
+    elif(min == -1 and max >= 0):
+        return (price < max)
+    
+    #Lower bound with no upper bound
+    elif(min >= 0 and max == -1):
+        return (price > min)
+    
+    #Upper and lower bound
+    else:
+        return (price > min and price < max)
+
 
 #Setting Chrome to run Headless
 chrome_options = Options()
 chrome_options.add_argument("start-maximized")
-
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
@@ -119,21 +147,32 @@ print("Welcome to Bell's starting price lookup program for mobile phones."
 
 user_brand_preferences = get_preferrred_brands()
 
-#full_price, monthly_price = get_price_ranges()
+user_full_price_preference, user_monthly_price_preference = get_price_ranges()
 
 user_color_preferences = get_preferred_colors()
 
 user_phones = []
 
+#If the user has no brand preferences, check all the brands
 if(len(user_brand_preferences) == 0):
     user_brand_preferences = brands
 
 for brand in user_brand_preferences:
-    print("Current brand is ", brand)
     driver.find_element_by_id("filter_nav_" + brand.lower()).click()
     phones = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div""").find_elements_by_class_name("dl-tile")
-    print(len(phones))
     for phone in phones:
+
+        #Some tabs have a view all button that i'm skipping (Like samsung and apple)
+        if('view-all' in phone.get_attribute("class")):
+            continue
+
+        #Getting the info for the phones
         phone_info = get_phone_info(phone)
-        if(check_color_preference(phone_info[3], user_color_preferences)):
+
+        #Filtering phones based on user inputted preferences
+        valid_color = check_color_preference(phone_info[3], user_color_preferences)
+        valid_full_price = check_full_price_preference(phone_info[1], user_full_price_preference)
+
+        #If all the criteria are met, add the phone to the list shown to the user
+        if(valid_color and valid_full_price):
             user_phones.append(phone_info)
