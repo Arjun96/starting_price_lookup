@@ -30,14 +30,14 @@ def get_preferrred_brands(brands):
     user_brand_preferences = []
     
     #Gets the first brand the user prefers
-    response = get_valid_brand(input("If you have a brand preference, please enter them one at a time.\n"), brands)
-    if response != 0:
+    response = get_valid_brand(input("If you have a brand preference, please enter them one at a time below.\n"), brands)
+    if (response != 0):
         user_brand_preferences.append(response)
 
     #Allows the user to enter more than 1 brand as a preference
     while (response != 0):
         response = get_valid_brand(input("\nYou can enter another brand here now or press enter without typing anything to move onto the next question.\n"), brands)
-        if response != 0:
+        if (response != 0):
             user_brand_preferences.append(response)
     
     return user_brand_preferences
@@ -51,11 +51,11 @@ def get_price_limit():
     price_limit = input()
 
     #No preference
-    if(len(price_limit) == 0):
+    if (len(price_limit) == 0):
         return -1
 
     #Checks to make sure the user has entered a valid number as the input
-    if(not price_limit.isdigit()):
+    if (not price_limit.isdigit()):
         print("You have not entered a valid price limit. \n")
         while (not price_limit.isdigit()):
             price_limit = input("Please enter your preferred price limit now.")
@@ -76,7 +76,7 @@ def get_preferred_colors():
     #Allows the user to enter more colors
     while(len(response) != 0):
         response = input("\nYou can enter another color here now or press enter without typing anything to move onto the next question.\n")
-        if len(response) != 0:
+        if (len(response) != 0):
             user_color_preferences.append(response.lower())
     
     return user_color_preferences
@@ -130,12 +130,12 @@ def check_color_preference(phone_colors, user_color_preferences):
     valid = False
 
     #If the user has no color preference, the phone is valid to show
-    if(len(user_color_preferences) == 0):
+    if (len(user_color_preferences) == 0):
         return True
 
     #If the phone has a color that the user prefers, then the phone is valid to show
     for color in phone_colors:
-        if color.lower() in user_color_preferences:
+        if (color.lower() in user_color_preferences):
             valid = True
 
     return valid
@@ -151,15 +151,15 @@ def check_price(price, user_price_preference):
     max = int(user_price_preference[1])
 
     #No lower and no upper bound
-    if(min == -1 and max == -1):
+    if (min == -1 and max == -1):
         return True
 
     #Upper bound with no lower bound
-    elif(min == -1 and max >= 0):
+    elif (min == -1 and max >= 0):
         return (price <= max)
     
     #Lower bound with no upper bound
-    elif(min >= 0 and max == -1):
+    elif (min >= 0 and max == -1):
         return (price >= min)
     
     #Upper and lower bound
@@ -174,7 +174,7 @@ def check_full_price_preference(phone_full_price, user_full_price_preference):
     """
     
     #Converts the string to a float value to be processed by the helper
-    if(',' in phone_full_price):
+    if (',' in phone_full_price):
         comma = phone_full_price.index(',')
         price = float(phone_full_price[1:comma] + phone_full_price[comma+1:])
     else:
@@ -193,35 +193,53 @@ def check_monthly_price_preference(phone_monthly_price, user_monthly_price_prefe
     price = float(phone_monthly_price[1:-4])
     return check_price(price, user_monthly_price_preference)
 
+def display_results(user_phones):
+    """
+    Prints out the formatted list of phones that match the user's criteria
+    """
 
-#Setting Chrome to run Headless
+    if (len(user_phones) == 0):
+        print("There are no phones that match the criteria you entered, please try again")
+    else:
+        print("\n\n\n\n\n\n\n\n\n\n\n\n")
+        print("The following phones match the criteria that were specified: \n\n")
+        print("%30s %30s %30s %50s" % ("Phone Name","Full Price","Monthly Price", "Available Colors"))
+        for phone in user_phones:
+            colors = ''
+            for color in phone[3]:
+                colors += color + '/'
+            print("%30s %30s %30s %50s" %(phone[0], phone[1], phone[2], colors[:-1]))
+
+    print('\n')
+
+#Setting Chrome options
 chrome_options = Options()
-#chrome_options.add_argument("start-maximized")
-chrome_options.add_argument('--lang=es')
-#chrome_options.headless = True
+chrome_options.add_argument("start-maximized")
+chrome_options.add_argument('--lang=en')
 
 #Started chromedriver and navigated to Bell's smartphone paage
 driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
 print("\n\n\nWelcome to Bell's starting price lookup program for mobile phones.\n"
-+ "After answering a few optional questions, the program will tell you all the info you need about the best phone for you.\n" +
-"If you do not have a preference for any of the optional questions, please press enter without typing anything to move on \n \n")
++ "To narrow down your search, the program will now ask you some optional questions.\n" +
+"If you do not have a preference for any of the optional questions, please press enter without typing anything to move on. \n \n")
 
 user_phones = []
 all_phones = []
 
+#Getting the list of brands bell offers
 phone_brands = driver.find_element_by_xpath("""//*[@id="maincontent"]/div[5]""").find_elements_by_class_name("dl-list")
-
 for brand in phone_brands:
     all_phones.append(brand.get_attribute("data-brand"))
 
+#Getting the user's preferences to narrow down the search
 user_brand_preferences = get_preferrred_brands(all_phones)
 user_full_price_preference, user_monthly_price_preference = get_price_ranges()
 user_color_preferences = get_preferred_colors()
 
 #If the user has no brand preferences, check all the brands
-if(len(user_brand_preferences) == 0):
+if (len(user_brand_preferences) == 0):
     user_brand_preferences = all_phones
 
 for brand in user_brand_preferences:
@@ -233,7 +251,7 @@ for brand in user_brand_preferences:
     for phone in phones:
 
         #Some tabs have a view all button that i'm skipping (Like samsung and apple)
-        if('view-all' in phone.get_attribute("class")):
+        if ('view-all' in phone.get_attribute("class")):
             continue
 
         #Getting the info for the phones
@@ -245,12 +263,9 @@ for brand in user_brand_preferences:
         valid_color = check_color_preference(phone_info[3], user_color_preferences)
 
         #If all the criteria are met, add the phone to the list shown to the user
-        if(valid_color and valid_full_price and valid_monthly_price):
+        if (valid_color and valid_full_price and valid_monthly_price):
             user_phones.append(phone_info)
 
 driver.quit()
 
-for phone in user_phones:
-    print(phone[0])
-    print(phone[1])
-    print(phone[2])
+display_results(user_phones)
