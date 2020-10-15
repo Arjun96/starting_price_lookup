@@ -33,13 +33,13 @@ def get_preferrred_brands():
     user_brand_preferences = []
     
     #Gets the first brand the user prefers
-    response = get_valid_brand(input("If you have a brand preference, please enter them now one at a time and once you are done enter a blank space to move onto the next question. \n\n"))
+    response = get_valid_brand(input("If you have a brand preference, please enter them one at a time.\n"))
     if response != 0:
         user_brand_preferences.append(response)
 
     #Allows the user to enter more than 1 brand as a preference
     while (response != 0):
-        response = get_valid_brand(input("You can enter another brand here now or press enter without typing anything to move onto the next question.\n"))
+        response = get_valid_brand(input("\nYou can enter another brand here now or press enter without typing anything to move onto the next question.\n"))
         if response != 0:
             user_brand_preferences.append(response)
     
@@ -70,7 +70,7 @@ def get_preferred_colors():
     Returns a list of colors that contains the user's color preferences
     """
     user_color_preferences = []
-    response = input("If you have a color preferences please enter them here one at a time.")
+    response = input("\nIf you have a color preferences please enter them here one at a time.\n")
 
     #Adds the color to the list to be returned
     if (len(response) != 0):
@@ -78,7 +78,7 @@ def get_preferred_colors():
     
     #Allows the user to enter more colors
     while(len(response) != 0):
-        response = input("You can enter another color here now or press enter without typing anything to move onto the next question.\n")
+        response = input("\nYou can enter another color here now or press enter without typing anything to move onto the next question.\n")
         if len(response) != 0:
             user_color_preferences.append(response.lower())
     
@@ -92,15 +92,15 @@ def get_price_ranges():
     #Gets the min/max full price preference
     print("\nPlease enter your preferred minimum full price for a device now.")
     min_full_price = get_price_limit()
-    print("Please enter your preferred maximum full price for a device now.")
+    print("\nPlease enter your preferred maximum full price for a device now.")
     max_full_price = get_price_limit()
 
     full_price = [min_full_price,max_full_price]
 
     #Gets the min/max monthly price preference
-    print("Please enter your preferred minimum 24-month monthly price for a device now.")
+    print("\nPlease enter your preferred minimum 24-month monthly price for a device now.")
     min_monthly_price = get_price_limit()
-    print("Please enter your preferred maximum 24-month monthly price for a device now.")
+    print("\nPlease enter your preferred maximum 24-month monthly price for a device now.")
     max_monthly_price = get_price_limit()
 
     monthly_price = [min_monthly_price,max_monthly_price]
@@ -138,7 +138,6 @@ def check_color_preference(phone_colors, user_color_preferences):
 
     #If the phone has a color that the user prefers, then the phone is valid to show
     for color in phone_colors:
-        print(color)
         if color.lower() in user_color_preferences:
             valid = True
 
@@ -207,13 +206,13 @@ chrome_options.add_argument("start-maximized")
 driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
 driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices')
 
-print("Welcome to Bell's starting price lookup program for mobile phones."
-+ "After answering a few questions, the program will tell you all the info you need about the best phone for you.\n")
+print("\n\n\nWelcome to Bell's starting price lookup program for mobile phones.\n"
++ "After answering a few optional questions, the program will tell you all the info you need about the best phone for you.\n" +
+"If you do not have a preference for one of the optional questions, please press enter without typing anything to move on \n \n")
+
 
 user_brand_preferences = get_preferrred_brands()
-
 user_full_price_preference, user_monthly_price_preference = get_price_ranges()
-
 user_color_preferences = get_preferred_colors()
 
 user_phones = []
@@ -223,8 +222,11 @@ if(len(user_brand_preferences) == 0):
     user_brand_preferences = brands
 
 for brand in user_brand_preferences:
+
+    #Getting the phones that are available by the current brand
     driver.find_element_by_id("filter_nav_" + brand.lower()).click()
     phones = driver.find_element_by_xpath("""//*[@id="dl-list-""" + brand.lower() + """"]/div[2]/div""").find_elements_by_class_name("dl-tile")
+    
     for phone in phones:
 
         #Some tabs have a view all button that i'm skipping (Like samsung and apple)
