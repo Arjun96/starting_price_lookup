@@ -59,6 +59,8 @@ def get_price_limit():
         print("You have not entered a valid price limit. \n")
         while (not price_limit.isdigit()):
             price_limit = input("Please enter your preferred price limit now.")
+            if (len(price_limit) == 0):
+                return -1
 
     return price_limit
 
@@ -203,7 +205,7 @@ def display_results(user_phones):
     else:
         print("\n\n\n\n\n\n\n\n\n\n\n\n")
         print("The following phones match the criteria that were specified: \n\n")
-        print("%30s %30s %30s %50s" % ("Phone Name","Full Price","Monthly Price", "Available Colors"))
+        print("%30s %30s %30s %50s" % ("Phone Name","Full Price","Monthly Price", "Available Colors\n"))
         for phone in user_phones:
             colors = ''
             for color in phone[3]:
@@ -215,7 +217,7 @@ def display_results(user_phones):
 #Setting Chrome options
 chrome_options = Options()
 chrome_options.add_argument("start-maximized")
-chrome_options.add_argument('--lang=en')
+chrome_options.add_argument('--lang=en-CA')
 
 #Started chromedriver and navigated to Bell's smartphone paage
 driver=webdriver.Chrome('/Users/luthraar/Downloads/chromedriver',options = chrome_options)
