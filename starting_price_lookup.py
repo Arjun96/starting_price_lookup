@@ -130,7 +130,7 @@ def check_color_preference(phone_colors, user_color_preferences):
     Inputs a list that contains all the colors available for a phone and another list that contains all the colors the user prefers
     Returns a boolean value indicating if the phone is available in a color that the user has a preference for
     """
-    
+
     valid = False
 
     #If the user has no color preference, the phone is valid to show
@@ -207,12 +207,14 @@ def display_results(user_phones):
     else:
         print("\n\n\n\n\n\n\n\n\n\n\n\n")
         print("The following phones match the criteria that were specified: \n\n")
-        print("%30s %30s %30s %50s" % ("Phone Name","Full Price","Monthly Price", "Available Colors\n"))
+        print("%30s %30s %30s %30s %50s" % ("Vendor Name", "Model Name","Full Price","Monthly Price", "Available Colors\n"))
         for phone in user_phones:
             colors = ''
+            vendor_name = phone[0].split()[0]
+            model_name = phone[0][len(vendor_name) + 1:]
             for color in phone[3]:
                 colors += color + '/'
-            print("%30s %30s %30s %50s" %(phone[0], phone[1], phone[2], colors[:-1]))
+            print("%30s %30s %30s %30s %50s" %(vendor_name, model_name, phone[1], phone[2], colors[:-1]))
 
     print('\n')
 
