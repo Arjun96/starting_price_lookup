@@ -1,10 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-brands = ['samsung', 'apple', 'lg', 'google', 'huawei', 'tcl', 'motorola']
-error_msg = "If you have no preference, please press enter without typing anything to move onto the next question"
-
-def get_valid_brand(response):
+def get_valid_brand(response, brands):
     """
     Inputs the user response to what brand they prefer
     Returns a brand once it confirms it is one of the ones that Bell offers
@@ -25,7 +22,7 @@ def get_valid_brand(response):
 
     return response
 
-def get_preferrred_brands():
+def get_preferrred_brands(brands):
     """
     Returns a list that contains the user's brand preferences
     """
@@ -33,13 +30,13 @@ def get_preferrred_brands():
     user_brand_preferences = []
     
     #Gets the first brand the user prefers
-    response = get_valid_brand(input("If you have a brand preference, please enter them one at a time.\n"))
+    response = get_valid_brand(input("If you have a brand preference, please enter them one at a time.\n"), brands)
     if response != 0:
         user_brand_preferences.append(response)
 
     #Allows the user to enter more than 1 brand as a preference
     while (response != 0):
-        response = get_valid_brand(input("\nYou can enter another brand here now or press enter without typing anything to move onto the next question.\n"))
+        response = get_valid_brand(input("\nYou can enter another brand here now or press enter without typing anything to move onto the next question.\n"), brands)
         if response != 0:
             user_brand_preferences.append(response)
     
@@ -199,7 +196,8 @@ def check_monthly_price_preference(phone_monthly_price, user_monthly_price_prefe
 
 #Setting Chrome to run Headless
 chrome_options = Options()
-chrome_options.add_argument("start-maximized")
+#chrome_options.add_argument("start-maximized")
+chrome_options.add_argument('--lang=es')
 #chrome_options.headless = True
 
 #Started chromedriver and navigated to Bell's smartphone paage
@@ -208,18 +206,23 @@ driver.get('https://www.bell.ca/Mobility/Smartphones_and_mobile_internet_devices
 
 print("\n\n\nWelcome to Bell's starting price lookup program for mobile phones.\n"
 + "After answering a few optional questions, the program will tell you all the info you need about the best phone for you.\n" +
-"If you do not have a preference for one of the optional questions, please press enter without typing anything to move on \n \n")
+"If you do not have a preference for any of the optional questions, please press enter without typing anything to move on \n \n")
 
+user_phones = []
+all_phones = []
 
-user_brand_preferences = get_preferrred_brands()
+phone_brands = driver.find_element_by_xpath("""//*[@id="maincontent"]/div[5]""").find_elements_by_class_name("dl-list")
+
+for brand in phone_brands:
+    all_phones.append(brand.get_attribute("data-brand"))
+
+user_brand_preferences = get_preferrred_brands(all_phones)
 user_full_price_preference, user_monthly_price_preference = get_price_ranges()
 user_color_preferences = get_preferred_colors()
 
-user_phones = []
-
 #If the user has no brand preferences, check all the brands
 if(len(user_brand_preferences) == 0):
-    user_brand_preferences = brands
+    user_brand_preferences = all_phones
 
 for brand in user_brand_preferences:
 
