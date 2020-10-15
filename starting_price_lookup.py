@@ -68,6 +68,7 @@ def get_preferred_colors():
     """
     Returns a list of colors that contains the user's color preferences
     """
+
     user_color_preferences = []
     response = input("\nIf you have a color preferences please enter them here one at a time.\n")
 
@@ -129,6 +130,7 @@ def check_color_preference(phone_colors, user_color_preferences):
     Inputs a list that contains all the colors available for a phone and another list that contains all the colors the user prefers
     Returns a boolean value indicating if the phone is available in a color that the user has a preference for
     """
+    
     valid = False
 
     #If the user has no color preference, the phone is valid to show
